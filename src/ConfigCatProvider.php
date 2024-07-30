@@ -17,6 +17,7 @@ use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionDetails;
 use Psr\Log\LoggerInterface;
 
@@ -65,10 +66,12 @@ class ConfigCatProvider implements Provider
         $value = $details->getValue();
         if (!\is_bool($value)) {
             $builder = new ResolutionDetailsBuilder();
-            $builder->withValue($defaultValue);
-            $builder->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()));
 
-            return $builder->build();
+            return $builder->withValue($defaultValue)
+                ->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))
+                ->withReason(Reason::ERROR)
+                ->build()
+            ;
         }
 
         return $this->produceResolutionDetails(FlagValueType::BOOLEAN, $value, $defaultValue, $details);
@@ -186,7 +189,7 @@ class ConfigCatProvider implements Provider
         $error = $evaluationDetails->getErrorMessage();
         if (!\is_null($error)) {
             $builder = new ResolutionDetailsBuilder();
-            $builder->withValue($defaultValue);
+            $builder->withValue($defaultValue)->withReason(Reason::ERROR);
             if (\str_contains($error, 'key was not found in config JSON')) {
                 $builder->withError(new ResolutionError(ErrorCode::FLAG_NOT_FOUND(), $error));
             } else {
@@ -196,7 +199,7 @@ class ConfigCatProvider implements Provider
             return $builder->build();
         }
 
-        $result = $this->extractValueFromDetails($flagType, $value, $defaultValue);
+        $result = $this->extractValueFromDetails($flagType, $value, $defaultValue, $this->calculateReason($evaluationDetails));
         $variant = $evaluationDetails->getVariationId();
         if (!\is_null($variant)) {
             $result->withVariant($variant);
@@ -212,16 +215,17 @@ class ConfigCatProvider implements Provider
         string $flagType,
         bool|float|int|string $value,
         array|bool|DateTime|float|int|string $defaultValue,
+        string $evaluatedReason,
     ): ResolutionDetailsBuilder {
         $builder = new ResolutionDetailsBuilder();
 
         return match ($flagType) {
-            FlagValueType::BOOLEAN => $builder->withValue(\filter_var($value, FILTER_VALIDATE_BOOLEAN)),
-            FlagValueType::FLOAT => $builder->withValue((float) $value),
-            FlagValueType::INTEGER => $builder->withValue((int) $value),
-            FlagValueType::OBJECT => $this->extractObjectValue($value, $defaultValue, $builder),
-            FlagValueType::STRING => $builder->withValue($value),
-            default => $builder->withValue($defaultValue)->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH())),
+            FlagValueType::BOOLEAN => $builder->withValue(\filter_var($value, FILTER_VALIDATE_BOOLEAN))->withReason($evaluatedReason),
+            FlagValueType::FLOAT => $builder->withValue((float) $value)->withReason($evaluatedReason),
+            FlagValueType::INTEGER => $builder->withValue((int) $value)->withReason($evaluatedReason),
+            FlagValueType::OBJECT => $this->extractObjectValue($value, $defaultValue, $builder, $evaluatedReason),
+            FlagValueType::STRING => $builder->withValue($value)->withReason($evaluatedReason),
+            default => $builder->withValue($defaultValue)->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))->withReason(Reason::ERROR),
         };
     }
 
@@ -231,15 +235,25 @@ class ConfigCatProvider implements Provider
     private function extractObjectValue(
         bool|float|int|string $value,
         array|bool|DateTime|float|int|string $defaultValue,
-        ResolutionDetailsBuilder $builder
+        ResolutionDetailsBuilder $builder,
+        string $evaluatedReason,
     ): ResolutionDetailsBuilder {
         if (\is_string($value)) {
             /** @var mixed[] $decoded */
             $decoded = \json_decode($value, true);
 
-            return $builder->withValue($decoded);
+            return $builder->withValue($decoded)->withReason($evaluatedReason);
         }
 
-        return $builder->withValue($defaultValue)->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()));
+        return $builder->withValue($defaultValue)->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))->withReason(Reason::ERROR);
+    }
+
+    private function calculateReason(EvaluationDetails $details): string
+    {
+        if (!\is_null($details->getMatchedPercentageOption()) || !\is_null($details->getMatchedTargetingRule())) {
+            return Reason::TARGETING_MATCH;
+        }
+
+        return Reason::DEFAULT;
     }
 }
