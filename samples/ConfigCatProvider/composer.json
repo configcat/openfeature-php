@@ -1,0 +1,21 @@
+{
+    "name": "open-feature/configcat-sdk-example",
+    "description": "An example of using OpenFeature with the ConfigCat provider",
+    "type": "project",
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "OpenFeature\\Providers\\Examples\\ConfigCat\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Peter Csajtai",
+            "email": "peter.csajtai@configcat.com"
+        }
+    ],
+    "require": {
+        "open-feature/sdk": "^1.2.0",
+        "open-feature/configcat-provider": "^0.0.1"
+    }
+}
