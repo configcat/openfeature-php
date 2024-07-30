@@ -10,9 +10,9 @@ use ConfigCat\EvaluationDetails;
 use ConfigCat\User;
 use DateTime;
 use InvalidArgumentException;
-use OpenFeature\implementation\provider\AbstractProvider;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
+use OpenFeature\interfaces\common\Metadata;
 use OpenFeature\interfaces\flags\EvaluationContext;
 use OpenFeature\interfaces\flags\FlagValueType;
 use OpenFeature\interfaces\provider\ErrorCode;
@@ -22,7 +22,7 @@ use Psr\Log\LoggerInterface;
 
 use const FILTER_VALIDATE_BOOLEAN;
 
-class ConfigCatProvider extends AbstractProvider implements Provider
+class ConfigCatProvider implements Provider
 {
     protected const NAME = 'ConfigCatProvider';
 
@@ -43,7 +43,21 @@ class ConfigCatProvider extends AbstractProvider implements Provider
         $this->client = new ConfigCatClient($sdkKey, $options);
     }
 
+    /**
+     * IMPORTANT: Changing the logger here does not affect the internal ConfigCat SDK's logging.
+     * To change the SDK's logger, you have to use the `$options` argument of the `ConfigCatProvider` constructor.
+     */
     public function setLogger(LoggerInterface $logger): void {}
+
+    public function getHooks(): array
+    {
+        return [];
+    }
+
+    public function getMetadata(): Metadata
+    {
+        return new ConfigCatMetadata();
+    }
 
     public function resolveBooleanValue(string $flagKey, bool $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
@@ -143,7 +157,23 @@ class ConfigCatProvider extends AbstractProvider implements Provider
             return null;
         }
 
-        return new User($context->getTargetingKey() ?? '', null, null, $context->getAttributes()->toArray());
+        /** @var null|string $email */
+        $email = null;
+
+        /** @var null|string $email */
+        $country = null;
+
+        $emailAttr = $context->getAttributes()->get(User::EMAIL_ATTRIBUTE);
+        if (\is_string($emailAttr)) {
+            $email = $emailAttr;
+        }
+
+        $countryAttr = $context->getAttributes()->get(User::COUNTRY_ATTRIBUTE);
+        if (\is_string($countryAttr)) {
+            $country = $countryAttr;
+        }
+
+        return new User($context->getTargetingKey() ?? '', $email, $country, $context->getAttributes()->toArray());
     }
 
     /**

@@ -9,6 +9,8 @@ require __DIR__.'/vendor/autoload.php';
 use ConfigCat\ClientOptions;
 use ConfigCat\Log\LogLevel;
 use ConfigCat\OpenFeature\ConfigCatProvider;
+use OpenFeature\implementation\flags\Attributes;
+use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\OpenFeatureAPI;
 
 // retrieve the OpenFeatureAPI instance
@@ -29,5 +31,11 @@ $api->setProvider(new ConfigCatProvider('PKDVCLf-Hq-h-kCzMp-L7Q/HhOWfwVtZ0mb30i9
 // retrieve an OpenFeatureClient
 $client = $api->getClient();
 
-$isPOCFeatureEnabled = $client->getBooleanValue('isPOCFeatureEnabled', false);
+$context = new EvaluationContext('<SOME USERID>', new Attributes([
+    'Email' => 'configcat@example.com',
+    'Country' => 'CountryID',
+    'Version' => '1.0.0',
+]));
+
+$isPOCFeatureEnabled = $client->getBooleanValue('isPOCFeatureEnabled', false, $context);
 var_dump($isPOCFeatureEnabled);
