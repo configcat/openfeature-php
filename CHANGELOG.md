@@ -1,0 +1,1 @@
+Please check the [Github Releases](https://github.com/configcat/php-openfeature/releases) page for the changelog of the ConfigCat OpenFeature Provider for PHP.

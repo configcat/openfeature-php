@@ -6,6 +6,9 @@
 
 This repository contains an OpenFeature provider that allows the usage of [ConfigCat](https://configcat.com) with the [OpenFeature PHP SDK](https://github.com/open-feature/php-sdk).
 
+## Requirements
+- PHP >= 8.1
+
 ## Installation
 
 ```sh

@@ -6,10 +6,10 @@ namespace ConfigCat\OpenFeature\Test;
 
 use ConfigCat\ClientOptions;
 use ConfigCat\Log\LogLevel;
+use ConfigCat\OpenFeature\ConfigCatProvider;
 use ConfigCat\Override\FlagOverrides;
 use ConfigCat\Override\OverrideBehaviour;
 use ConfigCat\Override\OverrideDataSource;
-use ConfigCat\OpenFeature\ConfigCatProvider;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
