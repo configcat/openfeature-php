@@ -206,7 +206,10 @@ class ConfigCatProvider extends AbstractProvider implements Provider
         ResolutionDetailsBuilder $builder
     ): ResolutionDetailsBuilder {
         if (\is_string($value)) {
-            return $builder->withValue(\json_decode($value, true));
+            /** @var mixed[] $decoded */
+            $decoded = \json_decode($value, true);
+
+            return $builder->withValue($decoded);
         }
 
         return $builder->withValue($defaultValue)->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()));
