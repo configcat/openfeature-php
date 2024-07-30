@@ -56,6 +56,13 @@
             "v": {
                 "s": "test"
             }
+        },
+        "objectSetting": {
+            "t": 1,
+            "i": "v-object",
+            "v": {
+                "s": "{ \"bool_field\": true, \"text_field\": \"value\" }"
+            }
         }
     }
 }

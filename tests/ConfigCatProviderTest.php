@@ -19,7 +19,7 @@ use Psr\Log\NullLogger;
 
 class ConfigCatProviderTest extends TestCase
 {
-    private ConfigCatProvider $provider;
+    private Provider $provider;
     private EvaluationContext $evaluationContext;
 
     public function setUp(): void
@@ -39,124 +39,75 @@ class ConfigCatProviderTest extends TestCase
         $this->evaluationContext = new EvaluationContext('example@matching.com');
     }
 
-    public function testCanBeInstantiated(): void
-    {
-        // Given
-        $config = [
-            ClientOptions::LOG_LEVEL => LogLevel::NO_LOG,
-            ClientOptions::FLAG_OVERRIDES => new FlagOverrides(
-                OverrideDataSource::localArray([]),
-                OverrideBehaviour::LOCAL_ONLY,
-            ),
-        ];
-
-        // When
-        $instance = new ConfigCatProvider('local', $config);
-
-        // Then
-        $this->assertInstanceOf(Provider::class, $instance);
-    }
-
     public function testCanResolveBoolean(): void
     {
-        // Given
-        $expectedValue = true;
-        $expectedVariant = 'v-enabled';
-
-        // When
         $actualDetails = $this->provider->resolveBooleanValue('enabledFeature', false);
 
-        // Then
-        $this->assertEquals($expectedValue, $actualDetails->getValue());
-        $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertTrue($actualDetails->getValue());
+        $this->assertEquals('v-enabled', $actualDetails->getVariant());
         $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveString(): void
     {
-        // Given
-        $expectedValue = 'test';
-        $expectedVariant = 'v-string';
-
-        // When
         $actualDetails = $this->provider->resolveStringValue('stringSetting', '');
 
-        // Then
-        $this->assertEquals($expectedValue, $actualDetails->getValue());
-        $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals('test', $actualDetails->getValue());
+        $this->assertEquals('v-string', $actualDetails->getVariant());
         $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveInt(): void
     {
-        // Given
-        $expectedValue = 5;
-        $expectedVariant = 'v-int';
-
-        // When
         $actualDetails = $this->provider->resolveIntegerValue('intSetting', 0);
 
-        // Then
-        $this->assertEquals($expectedValue, $actualDetails->getValue());
-        $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals(5, $actualDetails->getValue());
+        $this->assertEquals('v-int', $actualDetails->getVariant());
         $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveFloat(): void
     {
-        // Given
-        $expectedValue = 1.2;
-        $expectedVariant = 'v-double';
-
-        // When
         $actualDetails = $this->provider->resolveFloatValue('doubleSetting', 0.0);
 
-        // Then
-        $this->assertEquals($expectedValue, $actualDetails->getValue());
-        $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals(1.2, $actualDetails->getValue());
+        $this->assertEquals('v-double', $actualDetails->getVariant());
+        $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
+    }
+
+    public function testCanResolveObject(): void
+    {
+        $actualDetails = $this->provider->resolveObjectValue('objectSetting', []);
+
+        $this->assertEquals(['bool_field' => true, 'text_field' => 'value'], $actualDetails->getValue());
+        $this->assertEquals('v-object', $actualDetails->getVariant());
         $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveWithTargeting(): void
     {
-        // Given
-        $expectedValue = true;
-        $expectedVariant = 'v-disabled-t';
-
-        // When
         $actualDetails = $this->provider->resolveBooleanValue('disabledFeature', false, $this->evaluationContext);
 
-        // Then
-        $this->assertEquals($expectedValue, $actualDetails->getValue());
-        $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertTrue($actualDetails->getValue());
+        $this->assertEquals('v-disabled-t', $actualDetails->getVariant());
         $this->assertEquals(Reason::TARGETING_MATCH, $actualDetails->getReason());
     }
 
     public function testFlagKeyNotFound(): void
     {
-        // Given
-        $defaultValue = false;
+        $actualDetails = $this->provider->resolveBooleanValue('non-existing', false, $this->evaluationContext);
 
-        // When
-        $actualDetails = $this->provider->resolveBooleanValue('non-existing', $defaultValue, $this->evaluationContext);
-
-        // Then
-        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertFalse($actualDetails->getValue());
         $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $actualDetails->getError()?->getResolutionErrorCode());
         $this->assertEquals(Reason::ERROR, $actualDetails->getReason());
-        $this->assertEquals("Failed to evaluate setting 'non-existing' (the key was not found in config JSON). Returning the `defaultValue` parameter that you specified in your application: 'false'. Available keys: ['disabledFeature', 'enabledFeature', 'intSetting', 'doubleSetting', 'stringSetting'].", $actualDetails->getError()?->getResolutionErrorMessage());
+        $this->assertEquals("Failed to evaluate setting 'non-existing' (the key was not found in config JSON). Returning the `defaultValue` parameter that you specified in your application: 'false'. Available keys: ['disabledFeature', 'enabledFeature', 'intSetting', 'doubleSetting', 'stringSetting', 'objectSetting'].", $actualDetails->getError()?->getResolutionErrorMessage());
     }
 
     public function testFlagTypeMismatch(): void
     {
-        // Given
-        $defaultValue = false;
+        $actualDetails = $this->provider->resolveBooleanValue('stringSetting', false, $this->evaluationContext);
 
-        // When
-        $actualDetails = $this->provider->resolveBooleanValue('stringSetting', $defaultValue, $this->evaluationContext);
-
-        // Then
-        $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertFalse($actualDetails->getValue());
         $this->assertEquals(Reason::ERROR, $actualDetails->getReason());
         $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $actualDetails->getError()?->getResolutionErrorCode());
     }

@@ -88,6 +88,7 @@ class ConfigCatProvider implements Provider
 
             return $builder->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))
+                ->withReason(Reason::ERROR)
                 ->build()
             ;
         }
@@ -106,6 +107,7 @@ class ConfigCatProvider implements Provider
 
             return $builder->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))
+                ->withReason(Reason::ERROR)
                 ->build()
             ;
         }
@@ -124,6 +126,7 @@ class ConfigCatProvider implements Provider
 
             return $builder->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))
+                ->withReason(Reason::ERROR)
                 ->build()
             ;
         }
@@ -137,7 +140,7 @@ class ConfigCatProvider implements Provider
     public function resolveObjectValue(string $flagKey, array $defaultValue, ?EvaluationContext $context = null): ResolutionDetails
     {
         $user = $this->contextToUser($context);
-        $details = $this->client->getValueDetails($flagKey, $defaultValue, $user);
+        $details = $this->client->getValueDetails($flagKey, '', $user);
 
         $value = $details->getValue();
         if (!\is_string($value)) {
@@ -145,6 +148,7 @@ class ConfigCatProvider implements Provider
 
             return $builder->withValue($defaultValue)
                 ->withError(new ResolutionError(ErrorCode::TYPE_MISMATCH()))
+                ->withReason(Reason::ERROR)
                 ->build()
             ;
         }
