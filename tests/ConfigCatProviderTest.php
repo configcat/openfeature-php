@@ -13,6 +13,7 @@ use ConfigCat\Override\OverrideDataSource;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Provider;
+use OpenFeature\interfaces\provider\Reason;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
@@ -68,6 +69,7 @@ class ConfigCatProviderTest extends TestCase
         // Then
         $this->assertEquals($expectedValue, $actualDetails->getValue());
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveString(): void
@@ -82,6 +84,7 @@ class ConfigCatProviderTest extends TestCase
         // Then
         $this->assertEquals($expectedValue, $actualDetails->getValue());
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveInt(): void
@@ -96,6 +99,7 @@ class ConfigCatProviderTest extends TestCase
         // Then
         $this->assertEquals($expectedValue, $actualDetails->getValue());
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveFloat(): void
@@ -110,6 +114,7 @@ class ConfigCatProviderTest extends TestCase
         // Then
         $this->assertEquals($expectedValue, $actualDetails->getValue());
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals(Reason::DEFAULT, $actualDetails->getReason());
     }
 
     public function testCanResolveWithTargeting(): void
@@ -124,6 +129,7 @@ class ConfigCatProviderTest extends TestCase
         // Then
         $this->assertEquals($expectedValue, $actualDetails->getValue());
         $this->assertEquals($expectedVariant, $actualDetails->getVariant());
+        $this->assertEquals(Reason::TARGETING_MATCH, $actualDetails->getReason());
     }
 
     public function testFlagKeyNotFound(): void
@@ -137,6 +143,7 @@ class ConfigCatProviderTest extends TestCase
         // Then
         $this->assertEquals($defaultValue, $actualDetails->getValue());
         $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $actualDetails->getError()?->getResolutionErrorCode());
+        $this->assertEquals(Reason::ERROR, $actualDetails->getReason());
         $this->assertEquals("Failed to evaluate setting 'non-existing' (the key was not found in config JSON). Returning the `defaultValue` parameter that you specified in your application: 'false'. Available keys: ['disabledFeature', 'enabledFeature', 'intSetting', 'doubleSetting', 'stringSetting'].", $actualDetails->getError()?->getResolutionErrorMessage());
     }
 
@@ -150,6 +157,7 @@ class ConfigCatProviderTest extends TestCase
 
         // Then
         $this->assertEquals($defaultValue, $actualDetails->getValue());
+        $this->assertEquals(Reason::ERROR, $actualDetails->getReason());
         $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $actualDetails->getError()?->getResolutionErrorCode());
     }
 }
