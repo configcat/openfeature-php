@@ -24,8 +24,6 @@ use const FILTER_VALIDATE_BOOLEAN;
 
 class ConfigCatProvider implements Provider
 {
-    protected const NAME = 'ConfigCatProvider';
-
     private ClientInterface $client;
 
     /**
