@@ -31,7 +31,7 @@ class ConfigCatProvider implements Provider
      *
      * @see https://configcat.com/docs/sdk-reference/php/#creating-the-configcat-client Documentation of ConfigCatProvider SDK configuration options
      *
-     * @param string  $sdkKey  the SDK Key used to communicate with the ConfigCatProvider services
+     * @param string  $sdkKey  The SDK Key used to communicate with the ConfigCatProvider services
      * @param mixed[] $options ConfigCatProvider SDK configuration options
      *
      * @throws InvalidArgumentException if the $sdkKey is not valid

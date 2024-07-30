@@ -1,6 +1,6 @@
 {
   "name": "configcat/openfeature-provider",
-  "description": "ConfigCat OpenFeature Provider for PHP",
+  "description": "ConfigCat OpenFeature Provider for PHP.",
   "license": "MIT",
   "type": "library",
   "keywords": ["feature flag", "feature toggle", "user targeting", "configcat", "openfeature", "provider"],
