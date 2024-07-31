@@ -1,1 +1,1 @@
-Please check the [Github Releases](https://github.com/configcat/php-openfeature/releases) page for the changelog of the ConfigCat OpenFeature Provider for PHP.
+Please check the [Github Releases](https://github.com/configcat/openfeature-php/releases) page for the changelog of the ConfigCat OpenFeature Provider for PHP.
