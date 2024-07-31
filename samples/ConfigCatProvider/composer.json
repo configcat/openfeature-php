@@ -1,5 +1,5 @@
 {
-    "name": "open-feature/configcat-sdk-example",
+    "name": "configcat/openfeature-example",
     "description": "An example of using OpenFeature with the ConfigCat provider",
     "type": "project",
     "license": "Apache-2.0",
