@@ -1,6 +1,6 @@
 # ConfigCat OpenFeature Provider for PHP
 
-[![Build Status](https://github.com/configcat/php-openfeature/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/configcat/php-openfeature/actions/workflows/ci.yml)
+[![Build Status](https://github.com/configcat/openfeature-php/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/configcat/openfeature-php/actions/workflows/ci.yml)
 [![Latest Stable Version](https://poser.pugx.org/configcat/openfeature-provider/version)](https://packagist.org/packages/configcat/openfeature-provider)
 [![Total Downloads](https://poser.pugx.org/configcat/openfeature-provider/downloads)](https://packagist.org/packages/configcat/openfeature-provider)
 
@@ -17,13 +17,13 @@ composer require configcat/openfeature-provider
 
 ## Usage
 
-The `ConfigCatProvider` client constructor takes the SDK key and an optional `array` argument containing the additional configuration options for the [ConfigCat PHP SDK](https://github.com/configcat/php-sdk):
+The `ConfigCatProvider` constructor takes the SDK key and an optional `array` argument containing the additional configuration options for the [ConfigCat PHP SDK](https://github.com/configcat/php-sdk):
 
 ```php
-// retrieve the OpenFeatureAPI instance
+// Acquire an OpenFeature API instance.
 $api = OpenFeatureAPI::getInstance();
 
-// build options for the ConfigCatProvider SDK
+// Build options for the ConfigCat SDK.
 $options = [
   ClientOptions::LOG_LEVEL => LogLevel::WARNING,
   ClientOptions::LOGGER => new \Monolog\Logger("name"),
@@ -32,12 +32,13 @@ $options = [
   //...
 ];
 
-// set the OpenFeature provider
+// Configure the provider.
 $api->setProvider(new ConfigCatProvider('<YOUR-CONFIGCAT-SDK-KEY>', $options));
 
-// retrieve an OpenFeatureClient
+// Create a client.
 $client = $api->getClient();
 
+// Evaluate a feature flag.
 $isMyAwesomeFeatureEnabled = $client->getBooleanValue('isMyAwesomeFeatureEnabled', false);
 ```
 
