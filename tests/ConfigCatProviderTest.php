@@ -39,6 +39,11 @@ class ConfigCatProviderTest extends TestCase
         $this->evaluationContext = new EvaluationContext('example@matching.com');
     }
 
+    public function testMetadata(): void
+    {
+        $this->assertEquals('ConfigCatProvider', $this->provider->getMetadata()->getName());
+    }
+
     public function testCanResolveBoolean(): void
     {
         $actualDetails = $this->provider->resolveBooleanValue('enabledFeature', false);
