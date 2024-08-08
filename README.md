@@ -26,8 +26,6 @@ $api = OpenFeatureAPI::getInstance();
 // Build options for the ConfigCat SDK.
 $options = [
   ClientOptions::LOG_LEVEL => LogLevel::WARNING,
-  ClientOptions::LOGGER => new \Monolog\Logger("name"),
-  ClientOptions::CACHE => new \ConfigCat\Cache\LaravelCache(Cache::store()),
   ClientOptions::CACHE_REFRESH_INTERVAL => 5,
   //...
 ];
