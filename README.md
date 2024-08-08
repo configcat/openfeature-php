@@ -4,7 +4,7 @@
 [![Latest Stable Version](https://poser.pugx.org/configcat/openfeature-provider/version)](https://packagist.org/packages/configcat/openfeature-provider)
 [![Total Downloads](https://poser.pugx.org/configcat/openfeature-provider/downloads)](https://packagist.org/packages/configcat/openfeature-provider)
 
-This repository contains an OpenFeature provider that allows the usage of [ConfigCat](https://configcat.com) with the [OpenFeature PHP SDK](https://github.com/open-feature/php-sdk).
+This repository contains an OpenFeature provider that allows [ConfigCat](https://configcat.com) to be used with the [OpenFeature PHP SDK](https://github.com/open-feature/php-sdk).
 
 ## Requirements
 - PHP >= 8.1
