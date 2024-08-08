@@ -17,13 +17,6 @@
     "require": {
         "php": ">=8.1",
         "open-feature/sdk": "^2.0",
-        "configcat/openfeature-provider": "*"
-    },
-    "minimum-stability": "dev",
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../../"
-        }
-    ]
+        "configcat/openfeature-provider": "^1"
+    }
 }
